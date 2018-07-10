@@ -45,6 +45,68 @@ async function getAllTimelogs(req, res) {
   }
 }
 
+async function getTimelogsGroupByStartTime(req, res) {
+  try {
+    const {
+      filter,
+      skip = 0,
+      limit = 20,
+      sort,
+      projection = {
+        __v: 0,
+        createdAt: 0,
+        modifiedAt: 0,
+        timezoneOffset: 0
+      }
+    } = Agp(req.query);
+    let count = await Timelog.aggregate([
+      {
+        $group: {
+          _id: '$startTime'
+        }
+      },
+      {
+        $count: 'total'
+      }
+    ]);
+
+    let result = await Timelog.aggregate([
+      {
+        $group: {
+          _id: '$startTime',
+          data: {
+            $push: {
+              endTime: '$endTime',
+              description: '$description'
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          _id: -1
+        }
+      },
+      {
+        $limit: limit
+      },
+      {
+        $skip: skip
+      }
+    ]);
+
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.set('X-Total-Count', count.total);
+    res.json({
+      payload: result,
+      count: result.length,
+      total: count.total
+    });
+  } catch (err) {
+    res.status(400).json({ payload: null, error: buildError(err) });
+  }
+}
+
 async function addTimelog(req, res) {
   const { startTime, endTime, description } = req.body;
 
@@ -137,6 +199,7 @@ function buildError(error) {
 
 module.exports = {
   getAllTimelogs,
+  getTimelogsGroupByStartTime,
   addTimelog,
   deleteTimelog,
   getTimelog,

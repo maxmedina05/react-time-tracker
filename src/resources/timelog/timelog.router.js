@@ -6,10 +6,12 @@ const {
   addTimelog,
   deleteTimelog,
   getTimelog,
-  updateTimelog
+  updateTimelog,
+  getTimelogsGroupByStartTime
 } = require('./timelog.controller');
 
 router.get('/', getAllTimelogs);
+router.get('/group', getTimelogsGroupByStartTime);
 
 router.post('/', addTimelog);
 
