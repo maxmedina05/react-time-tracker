@@ -1,18 +1,30 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import TimelogService from './timelogService';
+import TimelogForm from './components/TimelogForm';
+
 class App extends Component {
+  constructor() {
+    super();
+    this.saveTimeLog = this.saveTimeLog.bind(this);
+  }
+
+  saveTimeLog(timelog) {
+    TimelogService.addTimelog(timelog);
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="container-fluid">
+        <div className="paper-card timelog-form">
+          <TimelogForm onSave={this.saveTimeLog} />
+        </div>
+        <div className="timelog-table-container">
+          Timelog Container
+          <div>Timelog search form</div>
+          <div className="timelog-table">Timelog table</div>
+        </div>
       </div>
     );
   }

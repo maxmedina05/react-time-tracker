@@ -1,5 +1,60 @@
 body {
-  margin: 0;
+  margin-top: 4px;
+  background: #f6f6f6;
+}
+
+.paper-card {
+  background: #fff;
+  margin: 0 auto;
+  border: 0;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  padding: 1.25rem;
+}
+
+.paper-card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.form-row {
+  align-items: center;
+}
+
+.material-field {
+  margin-top: -1.2em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.material-field > label {
+  font-size: 0.8em;
+  color: #5f5f5f;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+.action-button {
+  background-color: #fff;
+  font-size: 36px;
+  color: #f44336;
+}
+
+.timelog-form input {
+  font-size: 0.85rem;
+}
+
+.timelog-form button.btn {
   padding: 0;
-  font-family: sans-serif;
+}
+
+@media screen and (max-width: 360px) {
+  .timelog-form .form-row > div {
+    margin-bottom: 24px;
+  }
+
+  .timelog-form .form-row > div:last-child {
+    margin-bottom: 0px;
+  }
 }

@@ -2,15 +2,24 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
-    "react-scripts": "1.1.4"
+  "proxy": {
+    "/api/*": {
+      "target": "http://localhost:3000"
+    }
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=4200 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.1.0",
+    "bootstrap": "^4.1.1",
+    "moment": "^2.22.2",
+    "react": "^16.4.1",
+    "react-datetime": "^2.14.0",
+    "react-dom": "^16.4.1",
+    "react-scripts": "1.1.4"
   }
 }

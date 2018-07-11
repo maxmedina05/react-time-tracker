@@ -109,7 +109,6 @@ async function getTimelogsGroupByStartTime(req, res) {
 
 async function addTimelog(req, res) {
   const { startTime, endTime, description } = req.body;
-
   try {
     let newTimelog = await Timelog.create({
       startTime,
