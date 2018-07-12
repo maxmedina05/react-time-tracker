@@ -12,16 +12,58 @@ async function addTimelog(timelog) {
     });
 
     if (response.ok) {
-      response = response.json();
-      console.log(response);
+      response = await response.json();
     }
   } catch (e) {}
 }
 
-async function getTimelogs() {}
+async function updateTimelog(timelog) {
+  try {
+    let response = await fetch(`${BASE_API_ENDPOINT}/${timelog._id}`, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json; charset=utf-8',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(timelog)
+    });
+
+    if (response.ok) {
+      response = await response.json();
+    }
+  } catch (e) {}
+}
+
+async function deleteTimelog(timelog) {
+  try {
+    let response = await fetch(`${BASE_API_ENDPOINT}/${timelog._id}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      return response;
+    }
+  } catch (e) {}
+}
+
+async function getTimelogs(q = '') {
+  try {
+    let response = await fetch(`${BASE_API_ENDPOINT}/group?term=${q}`, {
+      headers: {
+        Accept: 'application/json; charset=utf-8'
+      }
+    });
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (e) {}
+}
 
 const TimelogService = {
-  addTimelog
+  addTimelog,
+  deleteTimelog,
+  updateTimelog,
+  getTimelogs
 };
 
 export default TimelogService;

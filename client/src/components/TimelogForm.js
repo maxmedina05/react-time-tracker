@@ -2,40 +2,43 @@ import React, { Component } from 'react';
 import Datetime from 'react-datetime';
 import moment from 'moment';
 import Timelog from '../models/Timelog';
+import { computeTimeDuration } from '../utils';
 
-const computeTimeDifference = (date1, date2) => {
-  let diff = (date2.getTime() - date1.getTime()) / 1000;
-
-  let seconds = diff % 60;
-  let minutes = (diff / 60) % 60;
-  let hours = diff / 3600;
-
-  hours = Math.round(hours);
-  minutes = Math.round(minutes);
-  seconds = Math.round(seconds);
-
-  return `${hours}:${minutes < 10 ? '0' + minutes : minutes}:${
-    seconds < 10 ? '0' + seconds : seconds
-  }`;
-};
+const buildDefaultState = () => ({
+  isClockTicking: false,
+  hours: '00:00:00',
+  ...Timelog.defaultTimeLog()
+});
 
 export default class TimelogForm extends Component {
   constructor(props) {
     super(props);
-
     this.toggleTimer = this.toggleTimer.bind(this);
     this.tick = this.tick.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.isDateValid = this.isDateValid.bind(this);
 
-    this.state = {
-      isClockTicking: false,
-      startTime: new Date(),
-      endTime: new Date(),
-      description: '',
-      hours: '0:00:00'
-    };
+    this.state = buildDefaultState();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.timelog) {
+      this.setState(...buildDefaultState());
+      return;
+    }
+
+    if (
+      !this.props.timelog ||
+      this.props.timelog._id !== nextProps.timelog._id
+    ) {
+      this.setState({
+        ...Timelog.buildTimeLog(nextProps.timelog)
+      });
+
+      this.toggleTimer();
+    }
   }
 
   toggleTimer() {
@@ -57,7 +60,7 @@ export default class TimelogForm extends Component {
     const timelog = Timelog.buildTimeLog(this.state);
     this.props.onSave(timelog);
     this.setState({
-      hours: '0:00:00',
+      hours: '00:00:00',
       ...Timelog.defaultTimeLog()
     });
   }
@@ -76,12 +79,19 @@ export default class TimelogForm extends Component {
   }
 
   handleDateChange(name, value) {
-    const hours = computeTimeDifference(this.state.startTime, value.toDate());
+    const hours = computeTimeDuration(this.state.startTime, value.toDate());
 
     this.setState({
       [name]: value.toDate(),
       hours: hours
     });
+  }
+
+  isDateValid(current) {
+    const { startTime } = this.state;
+    const maxDate = moment(startTime).subtract(1, 'day');
+    const isValid = current.isAfter(maxDate);
+    return isValid;
   }
 
   render() {
@@ -94,9 +104,9 @@ export default class TimelogForm extends Component {
     } = this.state;
 
     return (
-      <form>
+      <form className="paper-card timelog-form">
         <div className="form-row">
-          <div className="col-md-6 mb-8">
+          <div className="col-md-5 mb-8">
             <input
               value={description}
               onChange={this.handleChange}
@@ -120,11 +130,12 @@ export default class TimelogForm extends Component {
             <Datetime
               onChange={value => this.handleDateChange('endTime', value)}
               name="endTime"
+              isValidDate={this.isDateValid}
               value={endTime}
             />
           </div>
 
-          <div className="col-md-1">
+          <div className="col-md-2">
             <input
               className="form-control"
               type="text"

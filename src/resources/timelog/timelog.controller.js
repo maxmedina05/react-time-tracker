@@ -46,23 +46,21 @@ async function getAllTimelogs(req, res) {
 }
 
 async function getTimelogsGroupByStartTime(req, res) {
+  const { term = '', skip = 0, limit = 20 } = req.query;
   try {
-    const {
-      filter,
-      skip = 0,
-      limit = 20,
-      sort,
-      projection = {
-        __v: 0,
-        createdAt: 0,
-        modifiedAt: 0,
-        timezoneOffset: 0
-      }
-    } = Agp(req.query);
     let count = await Timelog.aggregate([
       {
+        $match: {
+          description: { $regex: term, $options: 'g' }
+        }
+      },
+      {
         $group: {
-          _id: '$startTime'
+          _id: {
+            year: { $year: '$startTime' },
+            month: { $month: '$startTime' },
+            day: { $dayOfMonth: '$startTime' }
+          }
         }
       },
       {
@@ -72,12 +70,23 @@ async function getTimelogsGroupByStartTime(req, res) {
 
     let result = await Timelog.aggregate([
       {
+        $match: {
+          description: { $regex: term, $options: 'g' }
+        }
+      },
+      {
         $group: {
-          _id: '$startTime',
+          _id: {
+            year: { $year: '$startTime' },
+            month: { $month: '$startTime' },
+            day: { $dayOfMonth: '$startTime' }
+          },
           data: {
             $push: {
               endTime: '$endTime',
-              description: '$description'
+              startTime: '$startTime',
+              description: '$description',
+              _id: '$_id'
             }
           }
         }
