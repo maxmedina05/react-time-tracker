@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
 import './TimelogList.css';
 import { computeTimeDuration } from '../utils';
@@ -50,22 +50,59 @@ const TimelogRowHeader = ({ header, onDelete, onSelect }) => {
   );
 };
 
-const TimelogList = ({ timelogs, onDelete, onSelect }) => {
-  const buildKey = ({ year, month, day }) => `${year}-${month}-${day}`;
-  return (
-    <div className="paper-card timelog-list">
-      <ul>
-        {timelogs.map((header, idx) => (
-          <TimelogRowHeader
-            header={header}
-            key={buildKey(header._id)}
-            onDelete={onDelete}
-            onSelect={onSelect}
-          />
-        ))}
-      </ul>
-    </div>
-  );
-};
+const buildKey = ({ year, month, day }) => `${year}-${month}-${day}`;
+export default class TimelogList extends Component {
+  constructor(props) {
+    super(props);
 
-export default TimelogList;
+    this.handleChange = this.handleChange.bind(this);
+
+    this.state = {
+      query: ''
+    };
+  }
+
+  handleChange(event) {
+    clearTimeout(this.timer);
+    const { name, value } = event.target;
+
+    this.timer = setTimeout(() => {
+      console.log(value);
+      this.props.onRefresh(value);
+    }, 300);
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  render() {
+    const { timelogs, onDelete, onSelect } = this.props;
+    return (
+      <div className="paper-card timelog-list">
+        <div className="search-field">
+          <input
+            name="query"
+            type="text"
+            className="form-control"
+            placeholder="Looking for something? Just type something. e.g. Pet Project"
+            value={this.state.query}
+            onChange={this.handleChange}
+          />
+          <i className="fas fa-search" />
+        </div>
+
+        <ul>
+          {timelogs.map(header => (
+            <TimelogRowHeader
+              header={header}
+              key={buildKey(header._id)}
+              onDelete={onDelete}
+              onSelect={onSelect}
+            />
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}

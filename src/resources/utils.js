@@ -9,6 +9,11 @@ function chopProperties(obj, properties) {
   return JSON.parse(JSON.stringify(obj, replacer));
 }
 
+function isStringNullOrEmpty(string) {
+  return !string || string === '';
+}
+
 module.exports = {
-  chopProperties
+  chopProperties,
+  isStringNullOrEmpty
 };

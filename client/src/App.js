@@ -20,7 +20,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.fetchTimelogs();
+    this.fetchTimelogs('');
   }
 
   handleSaveTimeLog(timelog) {
@@ -37,15 +37,15 @@ class App extends Component {
     this.refreshTimelogList();
   }
 
-  refreshTimelogList() {
+  refreshTimelogList(query) {
     this.setState({
       timelogs: []
     });
-    this.fetchTimelogs();
+    this.fetchTimelogs(query);
   }
 
-  async fetchTimelogs() {
-    const response = await TimelogService.getTimelogs();
+  async fetchTimelogs(query) {
+    const response = await TimelogService.getTimelogs(query);
     const timelogs = response.payload;
 
     this.setState({
@@ -68,11 +68,11 @@ class App extends Component {
           onSave={this.handleSaveTimeLog}
           timelog={selectedTimelog}
         />
-        {/* <div>Timelog search form</div> */}
         <TimelogList
           timelogs={timelogs}
           onDelete={this.handleDeleteTimeLog}
           onSelect={this.handleSelectTimelog}
+          onRefresh={this.refreshTimelogList}
         />
       </div>
     );

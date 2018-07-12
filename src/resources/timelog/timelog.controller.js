@@ -1,7 +1,7 @@
 const Agp = require('api-query-params');
 const Timelog = require('./timelog.schema');
 const { TimelogNotFoundException } = require('./timelog.exception');
-const { chopProperties } = require('../utils');
+const { chopProperties, isStringNullOrEmpty } = require('../utils');
 
 const propertiesBackList = [
   'createdAt',
@@ -47,50 +47,46 @@ async function getAllTimelogs(req, res) {
 
 async function getTimelogsGroupByStartTime(req, res) {
   const { term = '', skip = 0, limit = 20 } = req.query;
-  try {
-    let count = await Timelog.aggregate([
-      {
-        $match: {
-          description: { $regex: term, $options: 'g' }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            year: { $year: '$startTime' },
-            month: { $month: '$startTime' },
-            day: { $dayOfMonth: '$startTime' }
+  const stages = isStringNullOrEmpty(term)
+    ? []
+    : [
+        {
+          $match: {
+            $text: {
+              $search: term,
+              $caseSensitive: false
+            }
           }
         }
+      ];
+  stages.push({
+    $group: {
+      _id: {
+        year: { $year: '$startTime' },
+        month: { $month: '$startTime' },
+        day: { $dayOfMonth: '$startTime' }
       },
+      data: {
+        $push: {
+          endTime: '$endTime',
+          startTime: '$startTime',
+          description: '$description',
+          _id: '$_id'
+        }
+      }
+    }
+  });
+
+  try {
+    let count = await Timelog.aggregate([
+      ...stages,
       {
         $count: 'total'
       }
     ]);
 
     let result = await Timelog.aggregate([
-      {
-        $match: {
-          description: { $regex: term, $options: 'g' }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            year: { $year: '$startTime' },
-            month: { $month: '$startTime' },
-            day: { $dayOfMonth: '$startTime' }
-          },
-          data: {
-            $push: {
-              endTime: '$endTime',
-              startTime: '$startTime',
-              description: '$description',
-              _id: '$_id'
-            }
-          }
-        }
-      },
+      ...stages,
       {
         $sort: {
           _id: -1

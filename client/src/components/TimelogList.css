@@ -32,3 +32,20 @@
 .actions button i {
   color: #5f5f5f;
 }
+
+.search-field {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.search-field input {
+  text-indent: 32px;
+}
+
+.search-field i {
+  color: #5f5f5f;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 16px;
+}

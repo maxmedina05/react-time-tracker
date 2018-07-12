@@ -7,4 +7,5 @@ const TimelogSchema = new mongoose.Schema({
   timezoneOffset: { type: Number, default: new Date().getTimezoneOffset() }
 });
 
+TimelogSchema.index({ description: 'text' });
 module.exports = mongoose.model('Timelog', TimelogSchema);
