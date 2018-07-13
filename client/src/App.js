@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import TimelogService from './timelogService';
 import TimelogForm from './components/TimelogForm';
 import TimelogList from './components/TimelogList';
+import LoadingDot from './components/LoadingDot/LoadingDot';
+
+function notifyError(err) {
+  toast.error(err.message || err, {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: 3000
+  });
+}
 
 class App extends Component {
   constructor() {
@@ -10,47 +20,61 @@ class App extends Component {
     this.handleSaveTimeLog = this.handleSaveTimeLog.bind(this);
     this.handleDeleteTimeLog = this.handleDeleteTimeLog.bind(this);
     this.handleSelectTimelog = this.handleSelectTimelog.bind(this);
-    this.fetchTimelogs = this.fetchTimelogs.bind(this);
     this.refreshTimelogList = this.refreshTimelogList.bind(this);
 
     this.state = {
       timelogs: [],
-      selectedTimelog: null
+      selectedTimelog: null,
+      isLoading: false
     };
   }
 
   componentDidMount() {
-    this.fetchTimelogs('');
+    this.refreshTimelogList('');
   }
 
   handleSaveTimeLog(timelog) {
-    if (timelog.isNew) {
-      TimelogService.addTimelog(timelog);
-    } else {
-      TimelogService.updateTimelog(timelog);
+    try {
+      if (timelog.isNew) {
+        TimelogService.addTimelog(timelog);
+      } else {
+        TimelogService.updateTimelog(timelog);
+      }
+      this.refreshTimelogList();
+    } catch (e) {
+      notifyError(e);
     }
-    this.refreshTimelogList();
   }
 
   handleDeleteTimeLog(timelog) {
-    TimelogService.deleteTimelog(timelog);
-    this.refreshTimelogList();
+    try {
+      TimelogService.deleteTimelog(timelog);
+      this.refreshTimelogList();
+    } catch (e) {
+      notifyError(e);
+    }
   }
 
-  refreshTimelogList(query) {
+  async refreshTimelogList(query) {
     this.setState({
+      isLoading: true,
       timelogs: []
     });
-    this.fetchTimelogs(query);
-  }
+    try {
+      const response = await TimelogService.getTimelogs(query);
+      const timelogs = response.payload;
 
-  async fetchTimelogs(query) {
-    const response = await TimelogService.getTimelogs(query);
-    const timelogs = response.payload;
-
-    this.setState({
-      timelogs
-    });
+      this.setState({
+        isLoading: false,
+        timelogs
+      });
+    } catch (e) {
+      notifyError(e);
+    } finally {
+      this.setState({
+        isLoading: false
+      });
+    }
   }
 
   handleSelectTimelog(timelog) {
@@ -60,10 +84,12 @@ class App extends Component {
   }
 
   render() {
-    const { timelogs, selectedTimelog } = this.state;
+    const { timelogs, selectedTimelog, isLoading } = this.state;
 
     return (
       <div className="container-fluid">
+        <ToastContainer />
+        <LoadingDot isLoading={isLoading} />
         <TimelogForm
           onSave={this.handleSaveTimeLog}
           timelog={selectedTimelog}
