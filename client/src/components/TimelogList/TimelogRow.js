@@ -1,9 +1,9 @@
 import React from 'react';
 import moment from 'moment';
 import './TimelogList.css';
-import { computeTimeDuration } from '../utils';
+import { computeTimeDuration } from '../../utils';
 
-const TimelogRow = ({ timelog, onDelete, onSelect }) => {
+export const TimelogRow = ({ timelog, onDelete, onSelect }) => {
   const startTime = new moment(timelog.startTime).format('hh:mm:ss A');
   const endTime = new moment(timelog.endTime).format('hh:mm:ss A');
 

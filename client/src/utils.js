@@ -1,5 +1,5 @@
 export const computeTimeDuration = (date1, date2) => {
-  let diff = (date2.getTime() - date1.getTime()) / 1000;
+  let diff = Math.abs((date2.getTime() - date1.getTime()) / 1000);
 
   let seconds = diff % 60;
   let minutes = (diff / 60) % 60;

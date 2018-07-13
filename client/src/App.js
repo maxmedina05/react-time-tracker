@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import TimelogService from './timelogService';
 import TimelogForm from './components/TimelogForm';
-import TimelogList from './components/TimelogList';
+import TimelogList from './components/TimelogList/TimelogList';
 import LoadingDot from './components/LoadingDot/LoadingDot';
 
 function notifyError(err) {
@@ -24,6 +24,8 @@ class App extends Component {
 
     this.state = {
       timelogs: [],
+      totalTimelogs: 0,
+      currentPage: 1,
       selectedTimelog: null,
       isLoading: false
     };
@@ -55,18 +57,22 @@ class App extends Component {
     }
   }
 
-  async refreshTimelogList(query) {
+  async refreshTimelogList(query, page) {
     this.setState({
       isLoading: true,
+      totalTimelogs: 0,
+      currentPage: 1,
       timelogs: []
     });
     try {
-      const response = await TimelogService.getTimelogs(query);
+      const response = await TimelogService.getTimelogs(query, page);
       const timelogs = response.payload;
 
       this.setState({
         isLoading: false,
-        timelogs
+        timelogs,
+        totalTimelogs: response.total,
+        currentPage: Number.parseInt(response.currentPage)
       });
     } catch (e) {
       notifyError(e);
@@ -84,7 +90,13 @@ class App extends Component {
   }
 
   render() {
-    const { timelogs, selectedTimelog, isLoading } = this.state;
+    const {
+      timelogs,
+      selectedTimelog,
+      isLoading,
+      totalTimelogs,
+      currentPage
+    } = this.state;
 
     return (
       <div className="container-fluid">
@@ -95,7 +107,9 @@ class App extends Component {
           timelog={selectedTimelog}
         />
         <TimelogList
+          currentPage={currentPage}
           timelogs={timelogs}
+          total={totalTimelogs}
           onDelete={this.handleDeleteTimeLog}
           onSelect={this.handleSelectTimelog}
           onRefresh={this.refreshTimelogList}

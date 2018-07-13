@@ -46,7 +46,9 @@ async function getAllTimelogs(req, res) {
 }
 
 async function getTimelogsGroupByStartTime(req, res) {
-  const { term = '', skip = 0, limit = 20 } = req.query;
+  const { term = '', page = 1, limit = 5 } = req.query;
+
+  const skip = (page - 1) * limit;
   const stages = isStringNullOrEmpty(term)
     ? []
     : [
@@ -93,19 +95,19 @@ async function getTimelogsGroupByStartTime(req, res) {
         }
       },
       {
-        $limit: limit
+        $limit: limit + skip
       },
       {
         $skip: skip
       }
     ]);
-
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    res.set('X-Total-Count', count.total);
+    res.set('X-Total-Count', count[0].total);
     res.json({
       payload: result,
+      currentPage: page,
       count: result.length,
-      total: count.total
+      total: count[0].total
     });
   } catch (err) {
     res.status(400).json({ payload: null, error: buildError(err) });

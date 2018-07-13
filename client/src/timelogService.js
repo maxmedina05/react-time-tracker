@@ -46,12 +46,15 @@ async function deleteTimelog(timelog) {
   return response;
 }
 
-async function getTimelogs(q = '') {
-  let response = await fetch(`${BASE_API_ENDPOINT}/group?term=${q}`, {
-    headers: {
-      Accept: 'application/json; charset=utf-8'
+async function getTimelogs(q = '', page = 1) {
+  let response = await fetch(
+    `${BASE_API_ENDPOINT}/group?term=${q}&page=${page}`,
+    {
+      headers: {
+        Accept: 'application/json; charset=utf-8'
+      }
     }
-  });
+  );
   response = await response.json();
   if (response.error) {
     throw new Error(response.error.message || response.error);

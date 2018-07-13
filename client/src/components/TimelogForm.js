@@ -79,7 +79,9 @@ export default class TimelogForm extends Component {
   }
 
   handleDateChange(name, value) {
-    const hours = computeTimeDuration(this.state.startTime, value.toDate());
+    const otherDate =
+      name === 'startTime' ? this.state.startTime : this.state.endTime;
+    const hours = computeTimeDuration(otherDate, value.toDate());
 
     this.setState({
       [name]: value.toDate(),
