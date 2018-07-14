@@ -20,10 +20,10 @@ app.use(bodyParser.json());
 app.use(`${BASE_API_URL}/timelogs`, resources.timelog.router);
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/dist/client'));
+  app.use(express.static('client/build'));
   app.get('*', (req, res) => {
     res.sendFile(
-      path.resolve(__dirname, 'client', 'dist', 'client', 'index.html')
+      require('path').resolve(__dirname, 'client', 'build', 'index.html')
     );
   });
 }

@@ -13,6 +13,7 @@
 
 .timelog-list ul {
   list-style: none;
+  padding: 0;
 }
 
 .timelog-row-header {
@@ -48,4 +49,8 @@
   top: 12px;
   right: 12px;
   font-size: 16px;
+}
+
+.pagination {
+  margin-top: 16px;
 }
