@@ -6,7 +6,6 @@ import { computeTimeDuration } from '../utils';
 
 const buildDefaultState = () => ({
   isClockTicking: false,
-  hours: '00:00:00',
   ...Timelog.defaultTimeLog()
 });
 
@@ -64,7 +63,6 @@ export default class TimelogForm extends Component {
     const timelog = Timelog.buildTimeLog(this.state);
     this.props.onSave(timelog);
     this.setState({
-      hours: '00:00:00',
       ...Timelog.defaultTimeLog()
     });
   }
@@ -83,13 +81,8 @@ export default class TimelogForm extends Component {
   }
 
   handleDateChange(name, value) {
-    const otherDate =
-      name === 'startTime' ? this.state.startTime : this.state.endTime;
-    const hours = computeTimeDuration(otherDate, value.toDate());
-
     this.setState({
-      [name]: value.toDate(),
-      hours: hours
+      [name]: value.toDate()
     });
   }
 
@@ -101,13 +94,8 @@ export default class TimelogForm extends Component {
   }
 
   render() {
-    const {
-      isClockTicking,
-      startTime,
-      endTime,
-      description,
-      hours
-    } = this.state;
+    const { isClockTicking, startTime, endTime, description } = this.state;
+    const hours = computeTimeDuration(startTime, endTime);
 
     return (
       <form className="paper-card timelog-form">
