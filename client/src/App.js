@@ -72,7 +72,7 @@ class App extends Component {
         isLoading: false,
         timelogs,
         totalTimelogs: response.total,
-        currentPage: Number.parseInt(response.currentPage)
+        currentPage: Number.parseInt(response.currentPage, 10)
       });
     } catch (e) {
       notifyError(e);
