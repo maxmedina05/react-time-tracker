@@ -19,6 +19,10 @@ export default class TimelogList extends Component {
     };
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.currentPage !== nextProps.currentPage) {
       this.setState({

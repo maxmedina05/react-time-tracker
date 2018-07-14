@@ -23,6 +23,10 @@ export default class TimelogForm extends Component {
     this.state = buildDefaultState();
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (!nextProps.timelog) {
       this.setState(...buildDefaultState());
@@ -45,7 +49,7 @@ export default class TimelogForm extends Component {
     const { isClockTicking } = this.state;
 
     if (!isClockTicking) {
-      this.timer = setInterval(this.tick.bind(this), 1000);
+      this.timer = setInterval(() => this.tick(), 1000);
     } else {
       clearInterval(this.timer);
       this.handleSave();
