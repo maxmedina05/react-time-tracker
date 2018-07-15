@@ -3,6 +3,12 @@ body {
   background: #f6f6f6;
 }
 
+nav.paper-card {
+  max-width: 992px;
+  background: #f44336;
+  margin-bottom: 1px;
+}
+
 .paper-card {
   background: #fff;
   margin: 0 auto;

@@ -52,6 +52,10 @@ class App extends Component {
     try {
       TimelogService.deleteTimelog(timelog);
       this.refreshTimelogList();
+      toast.success('The timelog was deleted successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000
+      });
     } catch (e) {
       notifyError(e);
     }
@@ -100,6 +104,11 @@ class App extends Component {
 
     return (
       <div className="container-fluid">
+        <nav className="navbar navbar-dark paper-card">
+          <a className="navbar-brand" href="#">
+            React Time Tracker
+          </a>
+        </nav>
         <ToastContainer />
         <LoadingDot isLoading={isLoading} />
         <TimelogForm

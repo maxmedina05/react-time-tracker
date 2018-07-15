@@ -45,7 +45,6 @@ export default class TimelogList extends Component {
   }
 
   goToPage(event, page) {
-    console.log('goToPage', page);
     event.preventDefault();
     const { query } = this.state;
     this.props.onRefresh(query, page + 1);

@@ -39,11 +39,14 @@ async function deleteTimelog(timelog) {
     method: 'DELETE'
   });
 
+  if (response.status === 204) {
+    return true;
+  }
+
   response = await response.json();
   if (response.error) {
     throw new Error(response.error.message || response.error);
   }
-  return response;
 }
 
 async function getTimelogs(q = '', page = 1) {

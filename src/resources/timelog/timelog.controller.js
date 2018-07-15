@@ -54,13 +54,15 @@ async function getTimelogsGroupByStartTime(req, res) {
     : [
         {
           $match: {
-            $text: {
-              $search: term,
-              $caseSensitive: false
-            }
+            description: { $regex: term, $options: 'ig' }
           }
         }
       ];
+  stages.push({
+    $sort: {
+      startTime: -1
+    }
+  });
   stages.push({
     $group: {
       _id: {
@@ -101,13 +103,17 @@ async function getTimelogsGroupByStartTime(req, res) {
         $skip: skip
       }
     ]);
+
+    const computeTotal = count =>
+      count && count.length > 0 ? count[0].total : 0;
+
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    res.set('X-Total-Count', count[0].total);
+    res.set('X-Total-Count', computeTotal(count));
     res.json({
       payload: result,
       currentPage: page,
       count: result.length,
-      total: count[0].total
+      total: computeTotal(count)
     });
   } catch (err) {
     res.status(400).json({ payload: null, error: buildError(err) });
